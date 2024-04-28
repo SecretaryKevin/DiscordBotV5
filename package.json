@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@discordjs/rest": "^2.2.0",
+    "axios": "^1.6.8",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "jquery": "^3.7.1",
+    "mongodb": "^6.5.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "discord-api-types": "^0.37.79"
+  }
+}
