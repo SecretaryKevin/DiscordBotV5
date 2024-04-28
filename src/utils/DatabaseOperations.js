@@ -1,7 +1,8 @@
+require("dotenv").config({path: '../../.env'});
 const {MongoClient, ServerApi} = require('mongodb');
 const log = require("./loggingOperations");
-const url = process.env.MONGO_URL;
-const databaseName = "database";
+const url = process.env.MONGO_DB_URL;
+const databaseName = "Database";
 
 async function connectToDatabase(){
     try {
@@ -17,9 +18,7 @@ async function connectToDatabase(){
 async function getCollection(collectionName, client){
     try {
         const database = client.db(databaseName);
-        const collection = database.collection(collectionName);
-        await closeDatabase()
-        return collection;
+        return database.collection(collectionName);
     } catch (error) {
         log.error(`An error occurred while getting the collection: ${error}`);
     }
@@ -29,12 +28,15 @@ async function insertDocument(collectionName, document){
 try {
         const client = await connectToDatabase();
         const collection = await getCollection(collectionName, client);
+        document._id = await getNumberofDocuments(collectionName, client) + 1;
         await collection.insertOne(document);
         log.info("Inserted document into collection");
+        await closeDatabase(client);
+        return true
     } catch (error) {
         log.error(`An error occurred while inserting the document: ${error}`);
+        return false
     }
-    await closeDatabase()
 }
 
 async function getAlldocuments(collectionName){
@@ -49,31 +51,30 @@ async function getAlldocuments(collectionName){
     }
 }
 
-async function getNumberofDocuments(collectionName){
+async function getNumberofDocuments(collectionName, client){
     try {
-        const client = await connectToDatabase();
         const collection = await getCollection(collectionName, client);
-        const numberOfDocuments = await collection.countDocuments();
-        await closeDatabase(client);
-        return numberOfDocuments;
+        return await collection.countDocuments();
     } catch (error) {
         log.error(`An error occurred while getting the number of documents: ${error}`);
     }
 }
 
-async function getDocumentViaId(collectionName, id){
+async function getRandomDocument(collectionName){
     try {
         const client = await connectToDatabase();
         const collection = await getCollection(collectionName, client);
-        const document = await collection.findOne({id: id});
+        const numberOfDocuments = await getNumberofDocuments(collectionName, client);
+        const randomIndex = Math.floor(Math.random() * numberOfDocuments);
+        const randomDocument = await collection.findOne({}, {skip: randomIndex});
         await closeDatabase(client);
-        return document;
+        return randomDocument;
     } catch (error) {
-        log.error(`An error occurred while getting the document: ${error}`);
+        log.error(`An error occurred while getting a random document: ${error}`);
     }
 }
 
-async function updateDocument(collectionName, filter, update){
+async function updateDocumentViaId(collectionName, filter, update){
     try {
         const client = await connectToDatabase();
         const collection = await getCollection(collectionName, client);
@@ -85,7 +86,7 @@ async function updateDocument(collectionName, filter, update){
     }
 }
 
-async function deleteDocument(collectionName, filter){
+async function deleteDocumentViaId(collectionName, filter){
     try {
         const client = await connectToDatabase();
         const collection = await getCollection(collectionName, client);
@@ -106,3 +107,5 @@ async function closeDatabase(client){
         log.error(`An error occurred while closing the database connection: ${error}`);
     }
 }
+
+module.exports = {insertDocument}
