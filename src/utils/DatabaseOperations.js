@@ -60,6 +60,17 @@ async function getNumberofDocuments(collectionName, client){
     }
 }
 
+async function getNumberofDocumentsExternal(collectionName){
+    try {
+        const client = await connectToDatabase();
+        const numberOfDocuments = await getNumberofDocuments(collectionName, client);
+        await closeDatabase(client);
+        return numberOfDocuments;
+    } catch (error) {
+        log.error(`An error occurred while getting the number of documents: ${error}`);
+    }
+}
+
 async function getRandomDocument(collectionName){
     try {
         const client = await connectToDatabase();
@@ -68,9 +79,22 @@ async function getRandomDocument(collectionName){
         const randomIndex = Math.floor(Math.random() * numberOfDocuments);
         const randomDocument = await collection.findOne({}, {skip: randomIndex});
         await closeDatabase(client);
-        return randomDocument;
+        log.info(`got random ${collectionName}: ${randomDocument.insult}`)
+        return randomDocument.insult;
     } catch (error) {
         log.error(`An error occurred while getting a random document: ${error}`);
+    }
+}
+
+async function getRangeOfDocuments(collectionName, start, end){
+try {
+        const client = await connectToDatabase();
+        const collection = await getCollection(collectionName, client);
+        const documents = await collection.find({}).skip(start).limit(end - start).toArray();
+        await closeDatabase(client);
+        return documents;
+    } catch (error) {
+        log.error(`An error occurred while getting a range of documents: ${error}`);
     }
 }
 
@@ -108,4 +132,4 @@ async function closeDatabase(client){
     }
 }
 
-module.exports = {insertDocument}
+module.exports = {insertDocument, getRandomDocument, getRangeOfDocuments, getNumberofDocumentsExternal}

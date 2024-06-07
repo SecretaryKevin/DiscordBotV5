@@ -1,5 +1,8 @@
 const log = require("../utils/loggingOperations");
+const {addInsult, insult, getAllInsults} = require("./insultCommands");
 let commandName
+let options
+let response
 function factCommandHandler(interaction) {
     // uses command name to reply to interaction using correct function in factCommands.js
     commandName = interaction.commandName;
@@ -25,15 +28,21 @@ function factCommandHandler(interaction) {
 function insultCommandHandler(interaction) {
     // uses command name to reply to interaction using correct function in insultCommands.js
     commandName = interaction.commandName;
+    options = interaction.options;
     switch (commandName) {
         case "insult":
-            //TODO: Implement insult command
+            response = insult().then((response) => {
+                interaction.reply(`${options.getString("target")} ${response}`);
+            })
             break;
         case "add_insult":
-            //TODO: Implement add_insult command
+            response = addInsult(options.getString("insult"));
+            interaction.reply(response);
             break;
         case "get_all_insults":
-            //TODO: Implement get_all_insults command
+            response = getAllInsults().then((response) => {
+                interaction.reply(response);
+            })
             break;
         case "update_insult":
             //TODO: Implement update_insult command

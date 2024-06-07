@@ -11,7 +11,7 @@ const commands = [
         name: 'statistics',
         description: 'Get statistics of the bot'
     },
-    {
+    /*{
         name: "fact",
         description: "Get a random fact"
     },
@@ -57,6 +57,42 @@ const commands = [
                 name: "fact_id",
                 description: "The ID of the fact you want to delete",
                 type: 3,
+                required: true
+            }
+        ]
+    }*/
+    {
+        name: "insult",
+        description: "insult something/someone",
+        options: [
+            {
+                name: "target",
+                description: "The target of the insult",
+                type: 3,
+                required: true
+            }
+        ]
+    },
+    {
+        name: "add_insult",
+        description: "Add an insult",
+        options: [
+            {
+                name: "insult",
+                description: "The insult you want to add",
+                type: 3,
+                required: true
+            }
+        ]
+    },
+    {
+        name: "get_all_insults",
+        description: "Get insults in groups of 10",
+        options: [
+            {
+                name: "page",
+                description: "The page of insults you want to see",
+                type: 4,
                 required: true
             }
         ]
